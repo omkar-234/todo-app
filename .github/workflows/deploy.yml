@@ -20,5 +20,10 @@ jobs:
       - name: Setup Ansible
         run: sudo apt update && sudo apt install ansible -y
 
+      - name: Add EC2 private key
+        run: |
+          echo "${{ secrets.EC2_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
       - name: Run Ansible Playbook
-        run: ansible-playbook -i ansible/inventory ansible/deploy.yml
+        run: ansible-playbook -i ansible/inventory ansible/deploy.yml --private-key ~/.ssh/id_rsa

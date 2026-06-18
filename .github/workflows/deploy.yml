@@ -1,4 +1,4 @@
-name: Deploy via Ansible
+name: Deploy Todo App
 
 on:
   push:
@@ -9,10 +9,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Install Ansible
+      - name: Setup SSH known hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan 13.233.103.149 >> ~/.ssh/known_hosts
+
+      - name: Setup Ansible
         run: sudo apt update && sudo apt install ansible -y
 
-      - name: Run Playbook
+      - name: Run Ansible Playbook
         run: ansible-playbook -i ansible/inventory ansible/deploy.yml

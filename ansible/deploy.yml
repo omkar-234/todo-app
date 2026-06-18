@@ -1,0 +1,36 @@
+- name: Deploy Todo App on EC2
+  hosts: ec2
+  become: yes
+
+  tasks:
+    - name: Update apt
+      apt:
+        update_cache: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start Docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Copy project
+      copy:
+        src: ../
+        dest: /home/ubuntu/todo-app
+
+    - name: Build Docker image
+      shell: docker build -t todo-app /home/ubuntu/todo-app
+
+    - name: Stop container
+      shell: docker stop todo-app || true
+
+    - name: Remove container
+      shell: docker rm todo-app || true
+
+    - name: Run container
+      shell: docker run -d -p 80:5000 --name todo-app todo-app
